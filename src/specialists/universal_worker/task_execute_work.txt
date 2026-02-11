@@ -1,0 +1,202 @@
+TASK: EXECUTE AGENT WORK
+========================
+
+INSTRUCTIONS
+============
+Execute the assigned agent role and produce a structured proposal.
+
+EXECUTION STEPS:
+
+1. UNDERSTAND YOUR ASSIGNED ROLE
+   You are temporarily acting as: {agent_name}
+   Role: {agent_role}
+   Expertise: {agent_expertise}
+
+   INNER LAYER INSTRUCTIONS (from Genesis):
+   {agent_system_prompt}
+
+2. REVIEW AVAILABLE CONTEXT
+   The Knowledge Graph contains approved decisions from previous agents.
+   Use this context to ensure your proposal is consistent.
+
+   Knowledge Graph Context:
+   {kg_context}
+
+3. UNDERSTAND YOUR TASK
+   User's original goal: {user_query}
+
+   Your specific assignment: {agent_task}
+
+   Dependencies status: {dependencies_status}
+
+4. EXECUTE USING FRACTAL SUBGRAPH
+   You will now invoke the internal Planner → Executor → Critic loop:
+
+   - Planner: Create execution plan
+   - Executor: Generate draft based on plan
+   - Critic: Review and improve draft
+   - Iterate until quality threshold met
+
+5. GENERATE STRUCTURED OUTPUT
+   Your output MUST include:
+
+   A. CONTENT (textual description):
+      - What you accomplished
+      - How it aligns with the user's goal
+      - Any assumptions or decisions made
+
+   B. STRUCTURED_DATA (for Knowledge Graph):
+      {{
+        "entities": {{
+          "entity_id": {{
+            "type": "EntityType",
+            "properties": {{"key": "value"}}
+          }}
+        }},
+        "relations": [
+          {{"source": "entity_a", "rel": "relationship", "target": "entity_b"}}
+        ]
+      }}
+
+6. REQUEST HELP IF NEEDED
+   If you encounter a task OUTSIDE your expertise:
+   - Set spawn_requested=true
+   - Include SpawnRequest details in your output
+   - Explain what expertise you lack
+
+7. SELF-EVALUATE
+   Provide confidence_score (0-1):
+   - 0.9-1.0: Highly confident, ready for validation
+   - 0.7-0.9: Good quality, minor uncertainties
+   - 0.5-0.7: Acceptable but has gaps
+   - <0.5: Low confidence, needs review
+
+OUTPUT FORMAT
+=============
+Respond with valid JSON only (no markdown, no extra text):
+
+{{
+  "agent_name": "{agent_name}",
+  "draft": "Detailed description of what you accomplished...",
+  "structured_data": {{
+    "entities": {{}},
+    "relations": []
+  }},
+  "confidence_score": 0.0 to 1.0,
+  "internal_iterations": integer (how many Planner→Executor→Critic loops),
+  "spawn_requested": true or false,
+  "error": null or "error message"
+}}
+
+EXAMPLE OUTPUTS:
+
+Case A - Successful execution:
+{{
+  "agent_name": "BackendDev_001",
+  "draft": "Implemented POST /users endpoint using FastAPI. Endpoint accepts user registration data (email, password, name), validates input, hashes password with bcrypt, and stores in PostgreSQL via SQLAlchemy ORM. Returns 201 Created with user ID on success.",
+  "structured_data": {{
+    "entities": {{
+      "endpoint_users_post": {{
+        "type": "API_Endpoint",
+        "properties": {{
+          "method": "POST",
+          "path": "/users",
+          "framework": "FastAPI",
+          "authentication": "none"
+        }}
+      }},
+      "user_model": {{
+        "type": "Database_Model",
+        "properties": {{
+          "fields": ["id", "email", "password_hash", "name"],
+          "orm": "SQLAlchemy"
+        }}
+      }}
+    }},
+    "relations": [
+      {{"source": "backend", "rel": "implements", "target": "endpoint_users_post"}},
+      {{"source": "endpoint_users_post", "rel": "uses", "target": "user_model"}},
+      {{"source": "user_model", "rel": "stored_in", "target": "postgresql_db"}}
+    ]
+  }},
+  "confidence_score": 0.88,
+  "internal_iterations": 3,
+  "spawn_requested": false,
+  "error": null
+}}
+
+Case B - Spawn requested:
+{{
+  "agent_name": "BackendDev_001",
+  "draft": "Started implementing authentication endpoint but realized secure token management requires specialized security expertise. I can implement basic endpoint structure but need SecurityExpert for: JWT signing algorithms, token expiration policies, refresh token rotation, and secure storage patterns.",
+  "structured_data": {{
+    "entities": {{
+      "endpoint_auth_login": {{
+        "type": "API_Endpoint",
+        "properties": {{
+          "method": "POST",
+          "path": "/auth/login",
+          "status": "partial"
+        }}
+      }}
+    }},
+    "relations": [
+      {{"source": "backend", "rel": "implements", "target": "endpoint_auth_login"}}
+    ]
+  }},
+  "confidence_score": 0.45,
+  "internal_iterations": 2,
+  "spawn_requested": true,
+  "error": null
+}}
+
+Case C - Execution error:
+{{
+  "agent_name": "DBAdmin_001",
+  "draft": "",
+  "structured_data": {{}},
+  "confidence_score": 0.0,
+  "internal_iterations": 0,
+  "spawn_requested": false,
+  "error": "Fractal subgraph timeout after 120s. Planner phase stuck in loop analyzing database schema options. Possible issue: insufficient context from Knowledge Graph about data requirements."
+}}
+
+INPUT DATA
+==========
+AGENT PROFILE:
+- Name: {agent_name}
+- Role: {agent_role}
+- Expertise: {agent_expertise}
+- Spawn Depth: {spawn_depth}
+- Spawned By: {spawned_by}
+
+AGENT'S INNER INSTRUCTIONS (from Genesis):
+---
+{agent_system_prompt}
+---
+
+USER'S GOAL:
+{user_query}
+
+YOUR SPECIFIC TASK:
+{agent_task}
+
+KNOWLEDGE GRAPH CONTEXT:
+Entities (approved):
+{kg_entities}
+
+Relations (approved):
+{kg_relations}
+
+Recent Activity:
+{recent_activity}
+
+DEPENDENCIES:
+{dependencies_status}
+
+CONFIGURATION:
+- execution_timeout: {execution_timeout}s
+- max_retries_on_error: {max_retries_on_error}
+
+---
+Execute the work assigned to {agent_name} and return your structured proposal.

@@ -1,0 +1,100 @@
+TASK: SYNTHESIZE FINAL RESPONSE
+===============================
+
+INSTRUCTIONS
+============
+Synthesize the Knowledge Graph into a final response.
+
+SYNTHESIS STEPS:
+
+1. UNDERSTAND THE USER'S GOAL
+   - What did the user originally ask for?
+   - What type of answer would satisfy their needs?
+
+2. EXTRACT KEY DECISIONS
+   - What were the major decisions made?
+   - Which entities in the KG represent core deliverables?
+   - What relations show critical dependencies?
+
+3. BUILD NARRATIVE
+   - Start with high-level answer to user query
+   - Explain approach taken
+   - Detail key decisions with rationale
+   - Provide supporting details from KG
+
+4. FORMAT APPROPRIATELY
+   - output_format={output_format}
+   - verbosity={verbosity}
+   - Adjust detail level accordingly
+
+5. IDENTIFY AGENTS' CONTRIBUTIONS
+   - Which agents were involved?
+   - Credit their key contributions
+
+6. ASSESS CONFIDENCE
+   - How complete is the solution?
+   - Are there gaps or uncertainties?
+   - Rate confidence 0-1
+
+OUTPUT FORMAT
+=============
+Respond with valid JSON only (no markdown, no extra text):
+
+{{
+  "final_answer": "Complete, coherent response to user query...",
+  "summary": "2-3 paragraph executive summary...",
+  "key_decisions": [
+    "Decision 1 with rationale",
+    "Decision 2 with rationale"
+  ],
+  "entities_created": integer,
+  "agents_involved": ["Agent1", "Agent2"],
+  "confidence": 0.0 to 1.0
+}}
+
+EXAMPLE OUTPUTS:
+
+Software Engineering (API Design):
+{{
+  "final_answer": "Based on your requirements, I've designed a complete REST API architecture using FastAPI and PostgreSQL...",
+  "summary": "The system analyzed your API requirements and designed a production-ready architecture...",
+  "key_decisions": [
+    "FastAPI over Flask: Better async performance",
+    "PostgreSQL over MongoDB: Relational integrity needed"
+  ],
+  "entities_created": 8,
+  "agents_involved": ["BackendDev_001", "DBAdmin_001"],
+  "confidence": 0.95
+}}
+
+INPUT DATA
+==========
+USER'S ORIGINAL QUERY:
+{user_query}
+
+DETECTED DOMAIN:
+{domain}
+
+KNOWLEDGE GRAPH:
+Entities:
+{kg_entities}
+
+Relations:
+{kg_relations}
+
+APPROVED PROPOSALS:
+{approved_proposals}
+
+AGENTS WHO PARTICIPATED:
+{agents_list}
+
+SYSTEM ITERATIONS:
+{num_iterations} iterations completed
+
+CONFIGURATION:
+- output_format: {output_format}
+- include_kg_dump: {include_kg_dump}
+- verbosity: {verbosity}
+
+---
+Synthesize the above into a coherent final response for the user.

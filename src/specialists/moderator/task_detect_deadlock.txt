@@ -1,0 +1,115 @@
+TASK: DEADLOCK DETECTION
+========================
+
+INSTRUCTIONS
+============
+Analyze the system state to detect if the system is stuck in a deadlock.
+
+DEADLOCK TYPES:
+
+1. MAX_ITERATIONS
+   - System reached max_iterations limit
+   - Still hasn't achieved user's goal
+   - Indicates: Poor agent coordination or impossible task
+
+2. REJECTION_LOOP
+   - Agent rejected >= rejection_loop_threshold times consecutively
+   - Agent keeps proposing, Integrator keeps rejecting
+   - Indicates: Agent can't understand feedback or task is beyond capabilities
+
+3. CIRCULAR_DEPENDENCY
+   - Agent A depends on Agent B
+   - Agent B depends on Agent A (or longer chain A→B→C→A)
+   - No one can make progress
+   - Indicates: Poor task decomposition or missing agent
+
+4. SPAWN_FAILURE
+   - Multiple spawn requests rejected
+   - Agents need help but can't get it
+   - System saturated or requests poorly justified
+   - Indicates: Resource constraints or miscommunication
+
+DETECTION CRITERIA:
+- max_iterations: current_iteration >= max_iterations
+- rejection_loop: any agent with consecutive_rejections >= threshold
+- circular_dependency: dependency graph has cycles
+- spawn_failure: 3+ spawn requests rejected in last 5 iterations
+
+SUGGESTED ACTIONS:
+Based on deadlock type, recommend:
+- Review agent feedback and adjust manually
+- Add missing agent with specific expertise
+- Break circular dependencies by removing/reordering
+- Increase max_iterations if close to completion
+- Simplify user goal or break into smaller tasks
+
+OUTPUT FORMAT
+=============
+Respond with valid JSON only (no markdown, no extra text):
+
+{{
+  "deadlock_type": "max_iterations" or "rejection_loop" or "circular_dependency" or "spawn_failure",
+  "description": "Clear description of the deadlock situation",
+  "involved_agents": ["Agent1", "Agent2"],
+  "suggested_action": "Specific recommendation to resolve"
+}}
+
+EXAMPLE DETECTIONS:
+
+Case A - Rejection loop:
+{{
+  "deadlock_type": "rejection_loop",
+  "description": "BackendDev_001 has been rejected 3 times consecutively by Integrator. Keeps proposing MongoDB but DBAdmin_001 already committed to PostgreSQL. Agent not adapting to feedback.",
+  "involved_agents": ["BackendDev_001", "DBAdmin_001"],
+  "suggested_action": "Review Integrator feedback with BackendDev_001. Clarify that PostgreSQL is non-negotiable and MongoDB proposal conflicts with approved architecture."
+}}
+
+Case B - Max iterations:
+{{
+  "deadlock_type": "max_iterations",
+  "description": "System reached 20/20 iterations without completing user's goal. Multiple agents still have pending proposals. Progress too slow.",
+  "involved_agents": ["BackendDev_001", "Frontend_001", "DBAdmin_001"],
+  "suggested_action": "Review current progress vs remaining work. Either increase max_iterations to 30 if close to completion, or simplify the user's goal to focus on core requirements."
+}}
+
+Case C - Circular dependency:
+{{
+  "deadlock_type": "circular_dependency",
+  "description": "BackendDev_001 blocked waiting for DBAdmin_001 to define schema. DBAdmin_001 blocked waiting for BackendDev_001 to define API requirements. Classic circular dependency.",
+  "involved_agents": ["BackendDev_001", "DBAdmin_001"],
+  "suggested_action": "Break dependency cycle. Have DBAdmin_001 create initial schema based on user requirements. BackendDev_001 can then build API and request schema adjustments if needed."
+}}
+
+Case D - Spawn failure:
+{{
+  "deadlock_type": "spawn_failure",
+  "description": "3 spawn requests rejected in last 5 iterations. BackendDev_001 needs SecurityExpert but system at 9/10 capacity. Cannot make progress on authentication without security guidance.",
+  "involved_agents": ["BackendDev_001"],
+  "suggested_action": "Critical need for SecurityExpert to unblock authentication work. Options: 1) Increase max_agents to 11, or 2) Remove low-priority agent to make room for SecurityExpert."
+}}
+
+INPUT DATA
+==========
+SYSTEM STATE:
+- Current Iteration: {current_iteration}/{max_iterations}
+- Active Agents: {num_agents}/{max_agents}
+
+REJECTION HISTORY:
+{rejection_history}
+
+AGENT DEPENDENCIES:
+{dependency_graph}
+
+RECENT SPAWN REQUESTS:
+{spawn_request_history}
+
+AGENT STATUS:
+{agent_status_summary}
+
+CONFIGURATION:
+- max_iterations: {max_iterations}
+- rejection_loop_threshold: {rejection_loop_threshold}
+
+---
+Analyze the data above and determine if there is a deadlock. If no deadlock detected, respond with null values:
+{{"deadlock_type": null, "description": "No deadlock detected", "involved_agents": [], "suggested_action": ""}}

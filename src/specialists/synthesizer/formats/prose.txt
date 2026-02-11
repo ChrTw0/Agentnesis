@@ -1,0 +1,12 @@
+## Output Format: Natural Prose
+
+Generate your response as natural, flowing prose:
+- Write in complete paragraphs with smooth transitions
+- Use narrative structure (introduction, body, conclusion)
+- Employ clear topic sentences and logical flow
+- Make it read like a well-written article or report
+- Avoid bullet points and structured lists (use inline enumeration if needed)
+- Focus on readability and coherence
+
+Example tone:
+"Based on the analysis conducted across multiple domains, the system has identified three primary approaches to addressing your query. The first approach involves..."

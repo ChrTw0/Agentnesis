@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentnesis"
+version = "0.1.0"
+description = "Dynamic multi-agent system that spawns specialized DeepAgents on-demand for collaborative problem-solving with deep reasoning cycles"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "Christian Sosa", email = "christian.sosa.r16@gmail.com"}
+]
+keywords = ["llm", "agents", "multi-agent", "langgraph", "cognitive-architecture", "knowledge-graph"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "langgraph==0.5.4",
+    "langgraph-checkpoint==2.1.1",
+    "langgraph-prebuilt==0.5.2",
+    "langchain-core==0.3.76",
+    "langchain-openai==0.3.33",
+    "pydantic==2.11.7",
+    "pydantic-settings==2.10.1",
+    "python-dotenv==1.1.1",
+    "openai==1.107.3",
+    "tiktoken==0.12.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/Agentnesis"
+Documentation = "https://github.com/yourusername/Agentnesis/blob/main/README.md"
+Repository = "https://github.com/yourusername/Agentnesis"
+Issues = "https://github.com/yourusername/Agentnesis/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.black]
+line-length = 120
+target-version = ['py311']
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false

@@ -1,0 +1,53 @@
+# TASK: Synthesize Final Response
+
+Consolidate the Knowledge Graph and agent contributions into a final response for the user.
+
+## User Query
+{user_query}
+
+## Domain
+{domain}
+
+## Knowledge Graph
+
+### Entities
+{kg_entities}
+
+### Relations
+{kg_relations}
+
+## Approved Proposals
+{approved_proposals}
+
+## System Context
+- Agents Involved: {agents_list}
+- Iterations Completed: {num_iterations}
+
+## Your Task
+Analyze the accumulated knowledge and generate a comprehensive response that:
+1. Directly addresses the user's original query
+2. Integrates insights from all agent contributions
+3. Presents information in a logical, coherent structure
+4. Highlights key findings and decisions
+5. Acknowledges any limitations or gaps in the analysis
+
+## OUTPUT FORMAT
+You must respond with valid JSON matching this structure:
+```json
+{{
+  "final_answer": "Your complete response to the user (main content)",
+  "summary": "2-3 paragraph executive summary",
+  "key_decisions": ["Decision 1", "Decision 2", "..."],
+  "entities_created": <number>,
+  "agents_involved": ["Agent1", "Agent2", "..."],
+  "confidence": <0.0-1.0>
+}}
+```
+
+**Important**:
+- `final_answer`: This is your main response - format it according to the style instructions below
+- `summary`: Brief executive summary (2-3 paragraphs maximum)
+- `key_decisions`: List of major decisions/conclusions (3-7 items)
+- `entities_created`: Count of entities in the Knowledge Graph
+- `agents_involved`: List of agent names that contributed
+- `confidence`: Your confidence in the response quality (0.0 to 1.0)

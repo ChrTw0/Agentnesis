@@ -1,0 +1,135 @@
+TASK: SPAWN DECISION
+====================
+
+INSTRUCTIONS
+============
+Evaluate the SpawnRequest and make an intelligent decision based on:
+
+1. ANALYZE REQUEST QUALITY
+   - Is the justification solid and specific?
+   - Is the required expertise clearly defined?
+   - Is the priority level appropriate?
+
+2. CHECK FOR EXISTING AGENTS
+   - Does any current agent have similar expertise?
+   - Can we reuse instead of spawning new?
+   - Calculate expertise overlap (>50% = good reuse candidate)
+
+3. EVALUATE SYSTEM HEALTH
+   - Current saturation: num_agents / max_agents
+   - If saturation > threshold: reject non-critical requests
+   - Are there too many pending requests? (queue overload)
+
+4. ASSESS RECURSION RISK
+   - What's the requester's spawn_depth?
+   - Would spawning increase depth beyond safe levels?
+   - Use judgment: depth > 2 is risky but not forbidden if justified
+
+5. MAKE DECISION
+   Three possible outcomes:
+
+   A. SPAWN NEW AGENT (should_spawn=true)
+      - Unique expertise needed
+      - Solid justification
+      - System not saturated
+      - Provide agent_name in format: "RoleName_NNN"
+
+   B. REUSE EXISTING (should_spawn=false + existing_agent)
+      - Agent with similar expertise exists
+      - Can handle the requested task
+      - Provide existing_agent name
+
+   C. REJECT (should_spawn=false + existing_agent=null)
+      - System saturated
+      - Weak/vague justification
+      - Redundant with existing capabilities
+      - Dangerous recursion risk
+
+DECISION CRITERIA:
+- Priority=high + solid justification → more likely to approve
+- Spawn depth > 2 → scrutinize carefully (recursion risk)
+- Saturation > threshold → reject non-critical requests
+- Existing agent with 50%+ expertise overlap → prefer reuse
+- Vague/weak justification → reject
+- Hard limit reached (num_agents >= max_agents) → always reject
+
+OUTPUT FORMAT
+=============
+Respond with valid JSON only (no markdown, no extra text):
+
+{{
+  "should_spawn": true or false,
+  "agent_name": "RoleName_NNN" or null,
+  "existing_agent": "ExistingAgentName" or null,
+  "reasoning": "Detailed explanation of your decision",
+  "spawn_depth": integer (depth of new agent, if spawning)
+}}
+
+EXAMPLE DECISIONS:
+
+Case A - Spawn new agent:
+{{
+  "should_spawn": true,
+  "agent_name": "LegalAdvisor_001",
+  "existing_agent": null,
+  "reasoning": "No legal expertise in system. Request justified for GDPR compliance analysis. System at 4/10 agents (40% saturation). Priority=high. Safe to spawn at depth 1.",
+  "spawn_depth": 1
+}}
+
+Case B - Reuse existing:
+{{
+  "should_spawn": false,
+  "agent_name": null,
+  "existing_agent": "BackendDev_001",
+  "reasoning": "BackendDev_001 already has Python and FastAPI expertise (80% overlap with request). No need for new agent. Assign task to existing agent.",
+  "spawn_depth": 0
+}}
+
+Case C - Reject (saturation):
+{{
+  "should_spawn": false,
+  "agent_name": null,
+  "existing_agent": null,
+  "reasoning": "System at 9/10 agents (90% saturation, above 80% threshold). Request priority=low with weak justification. Reject to prevent overload.",
+  "spawn_depth": 0
+}}
+
+Case D - Reject (recursion risk):
+{{
+  "should_spawn": false,
+  "agent_name": null,
+  "existing_agent": null,
+  "reasoning": "Requester already at spawn_depth=3. Creating new agent would be depth=4 (dangerous recursion territory). Justification insufficient to override safety concern. Reject.",
+  "spawn_depth": 0
+}}
+
+INPUT DATA
+==========
+SPAWN REQUEST:
+- Requester: {requester}
+- Requested Role: {role}
+- Required Expertise: {required_expertise}
+- Justification: {justification}
+- Context: {context}
+- Priority: {priority}
+
+SYSTEM STATE:
+- Active Agents: {num_agents}/{max_agents}
+- Saturation: {saturation_percent}%
+- Pending Requests: {num_pending_requests}
+
+REQUESTER INFO:
+- Spawn Depth: {requester_spawn_depth}
+- Spawned By: {requester_spawned_by}
+
+EXISTING AGENTS:
+{agents_summary}
+
+CONFIGURATION:
+- max_agents: {max_agents}
+- max_spawn_depth: {max_spawn_depth} (null = use your judgment)
+- enable_agent_reuse: {enable_agent_reuse}
+- saturation_threshold: {saturation_threshold}%
+
+---
+Evaluate the spawn request above and make your decision.

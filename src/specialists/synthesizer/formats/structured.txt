@@ -1,0 +1,35 @@
+## Output Format: Structured
+
+Generate your response in clear structured format:
+- Use hierarchical organization with sections and subsections
+- Employ bullet points and numbered lists for clarity
+- Include clear headings (use ## and ###)
+- Separate different topics visually
+- Use tables or key-value pairs where appropriate
+- Make it scannable and easy to navigate
+
+Structure template:
+```
+## Summary
+[Brief overview]
+
+## Key Findings
+- Finding 1
+- Finding 2
+
+## Detailed Analysis
+### Topic A
+- Point 1
+- Point 2
+
+### Topic B
+- Point 1
+- Point 2
+
+## Recommendations
+1. Recommendation 1
+2. Recommendation 2
+
+## Limitations
+- Limitation 1
+```

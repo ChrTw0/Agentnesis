@@ -1,0 +1,132 @@
+TASK: TURN DECISION
+===================
+
+INSTRUCTIONS
+============
+Decide who should speak next based on system state and priorities.
+
+DECISION LOGIC:
+
+1. CHECK FOR COMPLETION
+   - Are all required tasks done?
+   - Is the user's goal satisfied?
+   - If YES → next_speaker="FINISH"
+
+2. CHECK FOR DEADLOCKS
+   - Iteration count >= max_iterations?
+   - Any agent with consecutive rejections >= rejection_loop_threshold?
+   - Circular dependencies detected?
+   - If YES → next_speaker="HUMAN" (escalate)
+
+3. CHECK STAGING AREA
+   - Are there unvalidated proposals?
+   - If YES → next_speaker="INTEGRATOR" (validate first)
+
+4. PRIORITIZE AGENTS
+   High Priority:
+   - Agents with recently rejected proposals (give chance to revise)
+   - Agents with priority="high" or "critical"
+
+   Normal Priority:
+   - Agents with no dependencies (can work immediately)
+   - Agents making steady progress
+
+   Low Priority / Blocked:
+   - Agents waiting on dependencies
+   - Agents with weak justification
+
+5. SELECT NEXT SPEAKER
+   - Choose highest priority available agent
+   - If multiple same priority → pick agent who hasn't spoken recently
+   - If all blocked → next_speaker="HUMAN"
+
+PRIORITY LEVELS:
+- critical: System-breaking issue, must resolve now
+- high: Rejected agent retrying, important unblocked work
+- normal: Regular agent work, steady progress
+- low: Nice-to-have, can wait
+
+OUTPUT FORMAT
+=============
+Respond with valid JSON only (no markdown, no extra text):
+
+{{
+  "next_speaker": "AGENT_NAME" or "INTEGRATOR" or "HUMAN" or "FINISH",
+  "reason": "Detailed explanation of your decision",
+  "priority": "critical" or "high" or "normal" or "low",
+  "blocked_agents": ["Agent1", "Agent2"]
+}}
+
+EXAMPLE DECISIONS:
+
+Case A - Validate proposal:
+{{
+  "next_speaker": "INTEGRATOR",
+  "reason": "BackendDev_001 just published proposal to Staging Area. Must validate before proceeding.",
+  "priority": "normal",
+  "blocked_agents": []
+}}
+
+Case B - Rejected agent retry:
+{{
+  "next_speaker": "BackendDev_001",
+  "reason": "BackendDev_001 was rejected by Integrator (1st rejection). Give priority to revise based on feedback.",
+  "priority": "high",
+  "blocked_agents": []
+}}
+
+Case C - Next available agent:
+{{
+  "next_speaker": "DBAdmin_001",
+  "reason": "BackendDev_001 proposal approved. DBAdmin_001 is next in queue with no dependencies.",
+  "priority": "normal",
+  "blocked_agents": ["Frontend_001"]
+}}
+
+Case D - Finish successfully:
+{{
+  "next_speaker": "FINISH",
+  "reason": "All agent proposals approved. Knowledge Graph complete. User's goal achieved.",
+  "priority": "normal",
+  "blocked_agents": []
+}}
+
+Case E - Deadlock escalation:
+{{
+  "next_speaker": "HUMAN",
+  "reason": "BackendDev_001 rejected 3 times consecutively (rejection loop). Need human intervention to break deadlock.",
+  "priority": "critical",
+  "blocked_agents": ["BackendDev_001"]
+}}
+
+INPUT DATA
+==========
+SYSTEM STATE:
+- Current Iteration: {current_iteration}/{max_iterations}
+- Staging Area: {num_proposals_pending} proposals pending validation
+- Active Agents: {num_agents}
+
+RECENT ACTIVITY:
+- Last Speaker: {last_speaker}
+- Last Action: {last_action}
+- Last Validation: {last_validation_result}
+- Recent Turns: {recent_turns}
+
+AGENT STATUS:
+{agent_status_summary}
+
+REJECTION HISTORY:
+{rejection_history}
+
+DEPENDENCIES:
+{dependency_summary}
+
+CONFIGURATION:
+- max_iterations: {max_iterations}
+- rejection_loop_threshold: {rejection_loop_threshold}
+
+USER GOAL STATUS:
+{goal_progress_summary}
+
+---
+Analyze the system state and decide who should speak next.

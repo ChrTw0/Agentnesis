@@ -1,0 +1,74 @@
+TASK: DOMAIN ANALYSIS
+=====================
+
+INSTRUCTIONS
+============
+Analyze the user's query to determine:
+
+1. Problem Domain: What field/area does this problem belong to?
+   - Examples: "Software Engineering", "Legal", "Medical Research", "Business Strategy"
+   - Be specific but not overly narrow
+
+2. Complexity Level: How complex is this problem?
+   - simple: Single-domain, straightforward task
+   - medium: Multi-step, requires coordination between 2-3 specialties
+   - complex: Multi-domain, requires 4+ specialists, has dependencies
+
+3. Required Roles: What specialized agents are needed?
+   - List specific roles (e.g., "Python Backend Developer", "Database Administrator")
+   - Focus on distinct expertise areas
+   - Avoid redundancy (don't spawn 3 "Backend Developers")
+
+4. Reasoning: Explain your analysis
+   - Why this domain?
+   - Why this complexity level?
+   - Why these specific roles?
+
+OUTPUT FORMAT
+=============
+Respond with valid JSON only (no markdown, no extra text):
+
+{{
+  "domain": "The identified domain",
+  "complexity": "simple" or "medium" or "complex",
+  "required_roles": ["Role1", "Role2", "Role3"],
+  "reasoning": "Detailed explanation of your analysis"
+}}
+
+EXAMPLE OUTPUTS:
+
+Simple task:
+{{
+  "domain": "Data Analysis",
+  "complexity": "simple",
+  "required_roles": ["Python Data Analyst"],
+  "reasoning": "User wants basic data visualization from CSV. Single specialist sufficient."
+}}
+
+Medium task:
+{{
+  "domain": "Software Engineering",
+  "complexity": "medium",
+  "required_roles": ["Backend Developer", "Database Administrator", "API Designer"],
+  "reasoning": "User requests REST API with database. Requires backend logic, database design, and API architecture. 3 coordinated specialists needed."
+}}
+
+Complex task:
+{{
+  "domain": "HealthTech Compliance",
+  "complexity": "complex",
+  "required_roles": ["Healthcare Systems Architect", "HIPAA Compliance Expert", "Database Security Specialist", "Medical Data Analyst"],
+  "reasoning": "User needs HIPAA-compliant patient data system. Involves healthcare regulations, security standards, database encryption, and medical workflows. Highly interdependent domains requiring 4+ specialists."
+}}
+
+INPUT DATA
+==========
+USER QUERY:
+{user_query}
+
+SYSTEM CONFIG:
+- max_agents: {max_agents}
+- Current agents: {num_agents}
+
+---
+Analyze the user query above and provide your domain analysis.

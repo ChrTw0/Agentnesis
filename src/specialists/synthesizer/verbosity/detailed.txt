@@ -1,0 +1,14 @@
+## Verbosity Level: Detailed
+
+Generate a comprehensive, thorough response:
+- Provide extensive context and background
+- Include all relevant details and nuances
+- Explain reasoning and methodology thoroughly
+- Use multiple examples and illustrations
+- Discuss edge cases and considerations
+- Include supporting evidence and rationale
+- Cover alternatives and trade-offs
+- Provide step-by-step explanations where appropriate
+- Don't rush - take space to explore topics fully
+
+Target length: 800-1500+ words

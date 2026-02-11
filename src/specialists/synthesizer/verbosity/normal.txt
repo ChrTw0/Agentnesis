@@ -1,0 +1,12 @@
+## Verbosity Level: Normal
+
+Generate a balanced, moderately detailed response:
+- Provide sufficient context and explanation
+- Include key details without being exhaustive
+- Balance breadth and depth appropriately
+- Use examples where they add clarity
+- Explain reasoning behind important conclusions
+- Include brief background where relevant
+- Maintain good pacing - neither rushed nor meandering
+
+Target length: 400-800 words

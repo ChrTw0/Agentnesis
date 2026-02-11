@@ -1,0 +1,172 @@
+TASK: VALIDATE PROPOSAL
+=======================
+
+INSTRUCTIONS
+============
+Validate the agent's proposal against the current Knowledge Graph.
+
+VALIDATION STEPS:
+
+1. PARSE PROPOSAL
+   - Read the agent's content (textual description)
+   - Read the structured_data (entities and relations to add/update)
+
+2. CHECK FOR CONFLICTS
+   Scan for 4 conflict types:
+
+   A. TECHNICAL CONFLICTS
+      - Technology/version mismatches
+      - Incompatible tools/frameworks
+      Example: Proposes MySQL but PostgreSQL committed
+
+   B. SEMANTIC CONFLICTS
+      - Logical contradictions
+      - Inconsistent definitions
+      Example: Claims "stateless API" but KG shows "API uses sessions"
+
+   C. TEMPORAL CONFLICTS
+      - Dependencies not met
+      - Wrong order of operations
+      Example: Proposes deployment but testing not complete
+
+   D. SCOPE CONFLICTS
+      - Agent working outside expertise
+      - Modifying unrelated domains
+      Example: Backend agent changing UI components
+
+3. EVALUATE SEVERITY
+   - critical: Blocks all progress, must fix
+   - high: Major issue, should fix before approval
+   - medium: Minor issue, can approve with warning
+   - low: Nitpick, informational only
+
+4. CHECK CONFIGURATION
+   - strict_mode=true: Reject on medium+ conflicts
+   - strict_mode=false: Approve if only low/medium conflicts
+   - allow_property_override: Can agent update existing entity properties?
+
+5. MAKE DECISION
+   Two outcomes:
+
+   A. APPROVED
+      - No critical/high conflicts (or only low conflicts in normal mode)
+      - Proposal aligns with Knowledge Graph
+      - Provide encouraging feedback
+      - List entities/relations to commit
+
+   B. REJECTED
+      - Critical or high conflicts detected
+      - Provide specific, actionable feedback
+      - List ALL conflicts found (up to max_conflicts_per_proposal)
+      - Suggest concrete fixes
+
+FEEDBACK QUALITY:
+- Be specific: "Change MongoDB to PostgreSQL (already committed in iteration 3)"
+- Be actionable: "Add entity 'test_suite' before proposing deployment"
+- Be constructive: Don't just say "wrong", explain WHY and HOW to fix
+
+OUTPUT FORMAT
+=============
+Respond with valid JSON only (no markdown, no extra text):
+
+{{
+  "agent_name": "The agent being validated",
+  "is_valid": true or false,
+  "status": "approved" or "rejected",
+  "feedback": "Detailed feedback for the agent",
+  "conflicts": ["conflict1", "conflict2"],
+  "confidence": 0.0 to 1.0
+}}
+
+EXAMPLE VALIDATIONS:
+
+Case A - Approved (clean):
+{{
+  "agent_name": "BackendDev_001",
+  "is_valid": true,
+  "status": "approved",
+  "feedback": "Proposal approved. FastAPI endpoint definition is consistent with existing backend architecture. Adding entity 'endpoint_users' and relation 'backend implements endpoint_users' to Knowledge Graph.",
+  "conflicts": [],
+  "confidence": 0.95
+}}
+
+Case B - Approved (minor warning):
+{{
+  "agent_name": "DBAdmin_001",
+  "is_valid": true,
+  "status": "approved",
+  "feedback": "Proposal approved with minor note: Using PostgreSQL 14 while backend specifies 13+. Compatible but consider version alignment in deployment config.",
+  "conflicts": ["version_mismatch_low"],
+  "confidence": 0.85
+}}
+
+Case C - Rejected (technical conflict):
+{{
+  "agent_name": "BackendDev_001",
+  "is_valid": false,
+  "status": "rejected",
+  "feedback": "REJECTED: Technical conflict detected. Proposal uses MongoDB for user storage, but DBAdmin_001 already committed PostgreSQL in iteration 5 (entity 'database_engine'). Change your proposal to use PostgreSQL or justify why MongoDB is necessary (requires override approval).",
+  "conflicts": ["database_technology_conflict"],
+  "confidence": 0.98
+}}
+
+Case D - Rejected (temporal conflict):
+{{
+  "agent_name": "DevOps_001",
+  "is_valid": false,
+  "status": "rejected",
+  "feedback": "REJECTED: Temporal conflict detected. Proposal attempts to deploy to production, but Knowledge Graph shows no entity 'test_suite' or 'test_results'. Must complete testing phase before deployment. Suggest: Wait for QA agent to approve tests first.",
+  "conflicts": ["premature_deployment", "missing_test_dependency"],
+  "confidence": 0.92
+}}
+
+Case E - Rejected (scope conflict):
+{{
+  "agent_name": "BackendDev_001",
+  "is_valid": false,
+  "status": "rejected",
+  "feedback": "REJECTED: Scope conflict detected. Proposal modifies entity 'ui_login_form' which is outside your expertise (Backend Developer). Frontend changes should be handled by Frontend_001. Focus on backend API endpoints only.",
+  "conflicts": ["out_of_scope_frontend"],
+  "confidence": 0.88
+}}
+
+Case F - Rejected (strict mode):
+{{
+  "agent_name": "SecurityExpert_001",
+  "is_valid": false,
+  "status": "rejected",
+  "feedback": "REJECTED: Strict mode enabled. Proposal has medium-severity semantic conflict: Claims 'encryption at rest' but doesn't specify algorithm or key management. In strict mode, all details must be explicit. Add: encryption algorithm, key storage method, rotation policy.",
+  "conflicts": ["incomplete_security_spec"],
+  "confidence": 0.75
+}}
+
+INPUT DATA
+==========
+PROPOSAL TO VALIDATE:
+- Agent Name: {agent_name}
+- Iteration: {iteration}
+- Content: {content}
+- Structured Data:
+  {structured_data}
+
+CURRENT KNOWLEDGE GRAPH:
+Entities:
+{kg_entities}
+
+Relations:
+{kg_relations}
+
+AGENT PROFILE:
+- Role: {agent_role}
+- Expertise: {agent_expertise}
+
+CONFIGURATION:
+- strict_mode: {strict_mode}
+- allow_property_override: {allow_property_override}
+- max_conflicts_per_proposal: {max_conflicts_per_proposal}
+
+RECENT APPROVALS (for context):
+{recent_approvals_summary}
+
+---
+Validate the proposal above against the Knowledge Graph and make your decision.

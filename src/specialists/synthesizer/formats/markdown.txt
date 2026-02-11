@@ -1,0 +1,52 @@
+## Output Format: Markdown
+
+Generate your response in rich Markdown format:
+- Use full Markdown syntax (headings, bold, italic, code blocks, tables)
+- Include emojis for visual appeal where appropriate
+- Use code blocks with language tags for technical content
+- Create tables for comparisons or structured data
+- Use blockquotes for important callouts
+- Include horizontal rules (---) to separate major sections
+- Make it visually engaging and well-formatted
+
+Markdown features to use:
+- **Bold** for emphasis
+- *Italic* for subtle emphasis
+- `code` for technical terms
+- ```language blocks for code
+- > blockquotes for callouts
+- | tables | for data
+- - bullets for lists
+- 1. numbered lists
+- # ## ### headings
+- --- separators
+- 🎯 emojis (sparingly)
+
+Example structure:
+```markdown
+# 🎯 Analysis Results
+
+## 📊 Executive Summary
+**Key Finding**: [summary in bold]
+
+---
+
+## 🔍 Detailed Findings
+
+### Component A
+- Point 1
+- Point 2
+
+> **Note**: Important callout here
+
+### Component B
+| Feature | Status |
+|---------|--------|
+| Item 1  | ✅     |
+
+---
+
+## 💡 Recommendations
+1. First recommendation
+2. Second recommendation
+```

@@ -1,0 +1,12 @@
+## Verbosity Level: Concise
+
+Generate a brief, to-the-point response:
+- Keep response under 3-4 paragraphs or equivalent
+- Focus only on essential information
+- Omit background details and lengthy explanations
+- Get straight to the answer
+- Use short sentences and direct language
+- Skip examples unless critical
+- Prioritize actionable insights over theoretical discussion
+
+Target length: 200-400 words
