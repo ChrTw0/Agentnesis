@@ -128,11 +128,11 @@ Case B - Approved (good enough, minor issues):
 Case C - Revise (incomplete):
 {{
   "is_complete": false,
-  "feedback": "Draft is incomplete. You designed the endpoint structure but didn't specify the structured_data for Knowledge Graph. Need to add entities (endpoint_users_post) and relations (backend implements endpoint_users_post) in proper format.",
+  "feedback": "Draft is incomplete. You described the solution approach but didn't specify the structured_data for the Knowledge Graph. Need to add entities and relations in proper format.",
   "suggested_improvements": [
-    "Add structured_data with entities dict containing endpoint definition",
-    "Add relations array linking backend_service to the endpoint",
-    "Reference the users_table entity from DBAdmin_001 that this endpoint uses"
+    "Add structured_data with entities dict containing the core deliverable definitions",
+    "Add relations array linking the components you described",
+    "Reference any existing KG entities your solution depends on"
   ],
   "force_approved": false
 }}
@@ -140,11 +140,11 @@ Case C - Revise (incomplete):
 Case D - Revise (conflicts with KG):
 {{
   "is_complete": false,
-  "feedback": "CONFLICT DETECTED: Your draft proposes MongoDB for data storage, but Knowledge Graph shows DBAdmin_001 already committed PostgreSQL (entity 'database_engine'). This will be rejected by Integrator. Revise to use PostgreSQL or provide strong justification for changing database technology.",
+  "feedback": "CONFLICT DETECTED: Your draft introduces a decision that contradicts a commitment already in the Knowledge Graph (entity 'core_component'). This will be rejected by Integrator. Revise to align with the committed decision or provide strong justification for changing it.",
   "suggested_improvements": [
-    "Change database_technology in structured_data from 'MongoDB' to 'PostgreSQL'",
-    "Update implementation description to use SQLAlchemy ORM instead of PyMongo",
-    "Reference existing 'database_engine' entity in relations"
+    "Update your structured_data to reference the committed entity 'core_component'",
+    "Align your implementation description with the existing approved decisions",
+    "If you believe the committed decision is wrong, flag it explicitly with justification"
   ],
   "force_approved": false
 }}
@@ -152,11 +152,11 @@ Case D - Revise (conflicts with KG):
 Case E - Revise (ignores feedback):
 {{
   "is_complete": false,
-  "feedback": "You ignored previous rejection feedback. Integrator rejected your last draft because endpoint lacked authentication. Current draft still shows authentication='none'. Review feedback_history and add authentication requirement to endpoint specification.",
+  "feedback": "You ignored previous rejection feedback. Integrator rejected your last draft for a specific reason that is still unresolved in the current draft. Review feedback_history and address the outstanding issue before resubmitting.",
   "suggested_improvements": [
-    "Add authentication property to endpoint_users_post: 'authentication': 'JWT bearer token'",
-    "Reference existing auth system from SecurityExpert_001 if available in KG",
-    "Update draft text to explain authentication flow"
+    "Read feedback_history carefully and identify the unresolved issue",
+    "Update both the draft text and structured_data to address the feedback",
+    "Confirm the fix explicitly in your draft description"
   ],
   "force_approved": false
 }}

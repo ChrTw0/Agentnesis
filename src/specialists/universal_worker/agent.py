@@ -19,6 +19,9 @@ from src.specialists.universal_worker.schema import (
 from src.specialists.universal_worker.chains import UniversalWorkerChains
 from src.specialists.fractal_agent.schema import InternalAgentState
 from src.specialists.fractal_agent.subgraph import compile_fractal_subgraph
+from src.tools.registry import get_tools
+from src.utils.helpers import get_temporal_anchor
+from src.config.settings import settings
 
 
 class UniversalWorkerAgent:
@@ -51,7 +54,8 @@ class UniversalWorkerAgent:
         # Inicializar chains (helpers)
         self.chains = UniversalWorkerChains()
 
-        # Compilar subgrafo fractal (cachear si configurado)
+        # Compilar subgrafo fractal sin tools (cache genérico sin tools)
+        # Agentes con tools reciben un subgrafo fresco con sus tools en _invoke_fractal_subgraph
         self.fractal_subgraph = compile_fractal_subgraph(llm) if config.cache_subgraphs else None
 
     def execute_agent_work(
@@ -98,13 +102,23 @@ class UniversalWorkerAgent:
             max_retries_on_error=self.config.max_retries_on_error
         )
 
+        # Inyectar temporal anchor en el KG context
+        temporal_anchor = get_temporal_anchor()
+        kg_context_with_time = f"{execution_context['kg_context']}\n\n{temporal_anchor}"
+
+        # Resolver tools del AgentProfile contra el registry (solo si tools están habilitadas)
+        resolved_tools = []
+        if settings.tools.tools_enabled and agent_profile.tools:
+            resolved_tools = get_tools(agent_profile.tools)
+
         # Invocar el subgrafo fractal
         try:
             result = self._invoke_fractal_subgraph(
                 agent_profile=agent_profile,
                 task=agent_task,
-                kg_context=execution_context["kg_context"],
-                feedback_history=[]
+                kg_context=kg_context_with_time,
+                feedback_history=[],
+                tools=resolved_tools
             )
             return result
         except Exception as e:
@@ -124,7 +138,8 @@ class UniversalWorkerAgent:
         agent_profile: AgentProfile,
         task: str,
         kg_context: str,
-        feedback_history: List[str]
+        feedback_history: List[str],
+        tools: list | None = None
     ) -> WorkerExecutionResult:
         """
         Invoca el subgrafo fractal (Planner → Executor → Critic).
@@ -139,7 +154,10 @@ class UniversalWorkerAgent:
             WorkerExecutionResult del subgrafo
         """
         # Obtener o compilar subgrafo
-        if self.fractal_subgraph is None:
+        # Si el agente tiene tools, siempre compilar subgrafo fresco con sus tools
+        if tools:
+            subgraph = compile_fractal_subgraph(self.llm, tools=tools)
+        elif self.fractal_subgraph is None:
             subgraph = compile_fractal_subgraph(self.llm)
         else:
             subgraph = self.fractal_subgraph

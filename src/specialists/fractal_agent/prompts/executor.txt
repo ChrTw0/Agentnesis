@@ -99,32 +99,31 @@ Respond with valid JSON only (no markdown, no extra text):
 
 EXAMPLE EXECUTIONS:
 
-Case A - Successful execution (Backend):
+Case A - Successful execution (any domain):
 {{
-  "draft": "Designed POST /users endpoint for user registration. Endpoint accepts JSON payload with email, password, and name fields. Validates email format and password strength. Hashes password using bcrypt before storage. Uses PostgreSQL database via SQLAlchemy ORM (consistent with DBAdmin_001's approved schema). Returns 201 Created with user_id on success, 400 Bad Request on validation errors.",
+  "draft": "Designed the user registration component. The component accepts user identity fields, validates input integrity, applies the appropriate security measures for credential storage, and returns success/failure signals. The approach is consistent with the data storage decisions already approved in the Knowledge Graph.",
   "structured_data": {{
     "entities": {{
-      "endpoint_users_post": {{
-        "type": "API_Endpoint",
+      "user_registration_component": {{
+        "type": "System_Component",
         "properties": {{
-          "method": "POST",
-          "path": "/users",
-          "framework": "FastAPI",
-          "validation": "pydantic",
-          "security": "bcrypt password hashing"
+          "responsibility": "user registration",
+          "input": "user identity fields",
+          "validation": "input integrity checks",
+          "security": "credential protection at rest"
         }}
       }}
     }},
     "relations": [
-      {{"source": "backend_service", "rel": "implements", "target": "endpoint_users_post"}},
-      {{"source": "endpoint_users_post", "rel": "writes_to", "target": "users_table"}}
+      {{"source": "core_service", "rel": "implements", "target": "user_registration_component"}},
+      {{"source": "user_registration_component", "rel": "writes_to", "target": "user_store"}}
     ]
   }},
   "scratchpad": [
-    "Step 1: Reviewed KG context - found users_table schema from DBAdmin_001",
-    "Step 2: Defined endpoint spec - POST /users with Pydantic validation",
-    "Step 3: Checked dependencies - PostgreSQL and SQLAlchemy already approved",
-    "Step 4: Designed FastAPI implementation with error handling",
+    "Step 1: Reviewed KG context - found approved user_store schema",
+    "Step 2: Defined component responsibilities and interfaces",
+    "Step 3: Checked dependencies - user_store already approved by DataSpecialist_001",
+    "Step 4: Designed implementation aligned with domain requirements",
     "Step 5: Created structured_data entities and relations",
     "Step 6: Synthesized findings into draft"
   ],
@@ -133,37 +132,36 @@ Case A - Successful execution (Backend):
   "confidence_score": 0.88
 }}
 
-Case B - Capability gap detected (Backend needs Security):
+Case B - Capability gap detected (any role):
 {{
-  "draft": "Started designing authentication endpoint /auth/login. Implemented basic username/password validation. However, secure token generation (JWT signing, refresh token rotation, token storage) requires specialized security expertise beyond my backend development scope. Recommending spawn of SecurityExpert to handle cryptographic aspects.",
+  "draft": "Completed initial design of the authentication component covering credential validation. However, the secure token lifecycle (generation, signing, rotation, revocation) requires specialized security expertise beyond my current scope. Documenting partial work and requesting a Security Specialist to handle cryptographic aspects.",
   "structured_data": {{
     "entities": {{
-      "endpoint_auth_login": {{
-        "type": "API_Endpoint",
+      "authentication_component": {{
+        "type": "System_Component",
         "properties": {{
-          "method": "POST",
-          "path": "/auth/login",
-          "status": "partial - needs security expert"
+          "responsibility": "user authentication",
+          "status": "partial - credential validation complete, token security pending"
         }}
       }}
     }},
     "relations": [
-      {{"source": "backend_service", "rel": "implements", "target": "endpoint_auth_login"}}
+      {{"source": "core_service", "rel": "implements", "target": "authentication_component"}}
     ]
   }},
   "scratchpad": [
     "Step 1: Reviewed authentication requirements from user query",
-    "Step 2: Implemented basic credential validation logic",
-    "Step 3: BLOCKED - token security requires crypto expertise I lack",
-    "Step 4: Emitting spawn_request for SecurityExpert"
+    "Step 2: Designed credential validation logic",
+    "Step 3: BLOCKED - token security lifecycle requires security expertise I lack",
+    "Step 4: Emitting spawn_request for Security Specialist"
   ],
   "spawn_requested": true,
   "spawn_request": {{
     "requester": "{agent_name}",
-    "role": "Security Expert",
-    "required_expertise": ["JWT", "Token Management", "Cryptography"],
-    "justification": "Authentication endpoint requires secure token generation, signing algorithms, and refresh token rotation - beyond backend developer's security expertise.",
-    "context": "Building /auth/login endpoint, need guidance on token security implementation",
+    "role": "Security Specialist",
+    "required_expertise": ["Token Management", "Cryptography", "Authentication Protocols"],
+    "justification": "Authentication requires secure token generation, signing, and rotation strategy - outside my expertise scope.",
+    "context": "Designing authentication component, need guidance on token security",
     "priority": "high"
   }},
   "confidence_score": 0.45
@@ -171,27 +169,26 @@ Case B - Capability gap detected (Backend needs Security):
 
 Case C - Low confidence (uncertain approach):
 {{
-  "draft": "Attempted to design caching strategy for API. Proposed Redis for session storage and rate limiting. However, uncertain about optimal TTL values, eviction policies, and whether to use Redis Cluster vs single instance for this scale. Recommendation is tentative pending architecture review.",
+  "draft": "Designed a caching strategy for the system. Proposed a dedicated caching layer for session management and rate limiting. However, uncertain about optimal expiration policies, eviction strategies, and scaling topology for the expected load. Recommendation is tentative and may need review by an infrastructure specialist.",
   "structured_data": {{
     "entities": {{
       "caching_layer": {{
-        "type": "Infrastructure",
+        "type": "Infrastructure_Component",
         "properties": {{
-          "technology": "Redis",
-          "use_cases": ["session_storage", "rate_limiting"],
-          "confidence": "low"
+          "responsibility": "session storage and rate limiting",
+          "confidence": "low - configuration details uncertain"
         }}
       }}
     }},
     "relations": [
-      {{"source": "backend_service", "rel": "uses", "target": "caching_layer"}}
+      {{"source": "core_service", "rel": "uses", "target": "caching_layer"}}
     ]
   }},
   "scratchpad": [
-    "Step 1: Analyzed caching requirements",
-    "Step 2: Proposed Redis (standard choice)",
-    "Step 3: Uncertain about configuration details - need more context",
-    "Step 4: Documented tentative approach"
+    "Step 1: Analyzed caching requirements from user query and KG",
+    "Step 2: Proposed caching layer with session and rate-limit responsibilities",
+    "Step 3: Uncertain about configuration and scaling details",
+    "Step 4: Documented tentative approach with low confidence"
   ],
   "spawn_requested": false,
   "spawn_request": null,
@@ -204,7 +201,12 @@ AGENT PROFILE:
 - Name: {agent_name}
 - Role: {agent_role}
 - Expertise: {agent_expertise}
-- Available Tools: {agent_tools}
+
+TEMPORAL CONTEXT:
+{temporal_anchor}
+
+AVAILABLE TOOLS:
+{agent_tools}
 
 TASK:
 {task}

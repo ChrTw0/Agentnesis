@@ -17,7 +17,7 @@ from src.core.states.schemas import AgentProfile, SpawnRequest
 from src.specialists.genesis.schema import DomainAnalysis, SpawnDecision
 from src.utils.prompt_loader import load_prompt
 from src.utils.llm_invoker import invoke_llm
-from src.utils.helpers import extract_json
+from src.utils.helpers import extract_json, get_temporal_anchor
 
 
 class GenesisChains:
@@ -52,7 +52,8 @@ class GenesisChains:
             "genesis/task_domain_analysis.txt",
             user_query=user_query,
             max_agents=max_agents,
-            num_agents=num_agents
+            num_agents=num_agents,
+            temporal_anchor=get_temporal_anchor()
         )
 
         # Construir mensajes
@@ -151,6 +152,46 @@ class GenesisChains:
                 f"Error: {e}\n"
                 f"Response: {response.content}"
             )
+
+    def assign_tools_for_role(self, role: str, required_expertise: List[str]) -> List[str]:
+        """
+        Chain: Decide qué tools necesita un rol spawneado dinámicamente.
+
+        Usado cuando un agente en ejecución solicita spawn de un nuevo agente
+        (SpawnRequest). En ese momento no hay DomainAnalysis previo con tools_per_role,
+        así que Genesis decide via LLM en base al rol y expertise requerido.
+
+        Args:
+            role: Rol del nuevo agente (ej: "Competitive Intelligence Specialist")
+            required_expertise: Expertise requerido por el SpawnRequest
+
+        Returns:
+            Lista de nombres de tools del registry (puede ser vacía)
+        """
+        expertise_str = ", ".join(required_expertise) if required_expertise else "general"
+        task_prompt = (
+            f"AVAILABLE TOOLS: web_search, scrape_article\n\n"
+            f"A new agent is being spawned dynamically with:\n"
+            f"- Role: {role}\n"
+            f"- Required expertise: {expertise_str}\n\n"
+            f"Decide which tools (if any) this agent needs to fulfill its role.\n"
+            f"Assign tools ONLY if the role requires real-time, external, or web-sourced information.\n"
+            f"Roles that reason, design, or synthesize from existing knowledge need NO tools.\n\n"
+            f"Respond with valid JSON only:\n"
+            f'{{ "tools": ["web_search"] }}  OR  {{ "tools": [] }}\n\n'
+            f"No explanation. JSON only."
+        )
+        messages = [
+            SystemMessage(content=self.system_prompt),
+            HumanMessage(content=task_prompt)
+        ]
+        response = invoke_llm(self.llm, messages, agent_name="Genesis", chain_name="assign_tools_for_role")
+        try:
+            data = extract_json(response.content)
+            tools = data.get("tools", [])
+            return [t for t in tools if isinstance(t, str)]
+        except (ValueError, KeyError):
+            return []
 
     def _format_agents_summary(self, agents: List[AgentProfile]) -> str:
         """Helper: Formatear lista de agentes."""

@@ -15,7 +15,7 @@ Analyze the user's query to determine:
    - complex: Multi-domain, requires 4+ specialists, has dependencies
 
 3. Required Roles: What specialized agents are needed?
-   - List specific roles (e.g., "Python Backend Developer", "Database Administrator")
+   - List specific roles (e.g., "Backend Developer", "Database Administrator", "Legal Analyst", "UX Designer")
    - Focus on distinct expertise areas
    - Avoid redundancy (don't spawn 3 "Backend Developers")
 
@@ -23,6 +23,24 @@ Analyze the user's query to determine:
    - Why this domain?
    - Why this complexity level?
    - Why these specific roles?
+
+5. Tools per Role: Which roles need external tools?
+   AVAILABLE TOOLS (only these exist):
+   - "web_search"     → Search the web via SearXNG (real-time information, current events, research)
+   - "scrape_article" → Extract full content from a URL (detailed reading of specific pages)
+
+   Assign tools ONLY when the role genuinely requires real-world, up-to-date, or external information.
+   Leave tools empty ([]) for roles that work purely from reasoning, existing KG context, or internal knowledge.
+
+   Examples of roles that NEED tools:
+   - "Market Research Analyst" → ["web_search", "scrape_article"]
+   - "Competitive Intelligence Specialist" → ["web_search"]
+   - "News & Trends Analyst" → ["web_search", "scrape_article"]
+
+   Examples of roles that do NOT need tools:
+   - "Systems Architect" → []  (designs from requirements, no search needed)
+   - "Legal Compliance Reviewer" → []  (reasons from domain knowledge)
+   - "Technical Writer" → []  (synthesizes from KG context)
 
 OUTPUT FORMAT
 =============
@@ -32,6 +50,7 @@ Respond with valid JSON only (no markdown, no extra text):
   "domain": "The identified domain",
   "complexity": "simple" or "medium" or "complex",
   "required_roles": ["Role1", "Role2", "Role3"],
+  "tools_per_role": {{"Role1": ["web_search"], "Role2": []}},
   "reasoning": "Detailed explanation of your analysis"
 }}
 
@@ -41,28 +60,36 @@ Simple task:
 {{
   "domain": "Data Analysis",
   "complexity": "simple",
-  "required_roles": ["Python Data Analyst"],
-  "reasoning": "User wants basic data visualization from CSV. Single specialist sufficient."
+  "required_roles": ["Data Analyst"],
+  "tools_per_role": {{}},
+  "reasoning": "User wants basic data visualization from CSV. Single specialist sufficient. No external data needed."
 }}
 
 Medium task:
 {{
   "domain": "Software Engineering",
   "complexity": "medium",
-  "required_roles": ["Backend Developer", "Database Administrator", "API Designer"],
-  "reasoning": "User requests REST API with database. Requires backend logic, database design, and API architecture. 3 coordinated specialists needed."
+  "required_roles": ["Systems Architect", "Database Designer", "API Designer"],
+  "tools_per_role": {{}},
+  "reasoning": "User requests system design with database. Requires architecture, schema design, and API definition. All roles work from reasoning and KG context."
 }}
 
-Complex task:
+Complex task (with research needs):
 {{
-  "domain": "HealthTech Compliance",
+  "domain": "Market Intelligence",
   "complexity": "complex",
-  "required_roles": ["Healthcare Systems Architect", "HIPAA Compliance Expert", "Database Security Specialist", "Medical Data Analyst"],
-  "reasoning": "User needs HIPAA-compliant patient data system. Involves healthcare regulations, security standards, database encryption, and medical workflows. Highly interdependent domains requiring 4+ specialists."
+  "required_roles": ["Market Research Analyst", "Competitive Intelligence Specialist", "Strategic Advisor"],
+  "tools_per_role": {{
+    "Market Research Analyst": ["web_search", "scrape_article"],
+    "Competitive Intelligence Specialist": ["web_search"]
+  }},
+  "reasoning": "User needs current market landscape analysis. Research roles require real-time web data. Strategic Advisor synthesizes findings using KG context only."
 }}
 
 INPUT DATA
 ==========
+{temporal_anchor}
+
 USER QUERY:
 {user_query}
 

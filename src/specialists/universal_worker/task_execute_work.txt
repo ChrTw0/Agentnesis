@@ -92,31 +92,29 @@ EXAMPLE OUTPUTS:
 
 Case A - Successful execution:
 {{
-  "agent_name": "BackendDev_001",
-  "draft": "Implemented POST /users endpoint using FastAPI. Endpoint accepts user registration data (email, password, name), validates input, hashes password with bcrypt, and stores in PostgreSQL via SQLAlchemy ORM. Returns 201 Created with user ID on success.",
+  "agent_name": "SpecialistA_001",
+  "draft": "Designed the user registration component. The component accepts identity fields, validates input integrity, applies appropriate credential protection, and persists data to the approved storage layer. Consistent with decisions already approved in the Knowledge Graph.",
   "structured_data": {{
     "entities": {{
-      "endpoint_users_post": {{
-        "type": "API_Endpoint",
+      "user_registration_component": {{
+        "type": "System_Component",
         "properties": {{
-          "method": "POST",
-          "path": "/users",
-          "framework": "FastAPI",
-          "authentication": "none"
+          "responsibility": "user registration",
+          "input": "user identity fields",
+          "security": "credential protection at rest"
         }}
       }},
       "user_model": {{
-        "type": "Database_Model",
+        "type": "Data_Model",
         "properties": {{
-          "fields": ["id", "email", "password_hash", "name"],
-          "orm": "SQLAlchemy"
+          "fields": ["id", "identity", "credential_hash", "display_name"]
         }}
       }}
     }},
     "relations": [
-      {{"source": "backend", "rel": "implements", "target": "endpoint_users_post"}},
-      {{"source": "endpoint_users_post", "rel": "uses", "target": "user_model"}},
-      {{"source": "user_model", "rel": "stored_in", "target": "postgresql_db"}}
+      {{"source": "core_service", "rel": "implements", "target": "user_registration_component"}},
+      {{"source": "user_registration_component", "rel": "uses", "target": "user_model"}},
+      {{"source": "user_model", "rel": "stored_in", "target": "user_store"}}
     ]
   }},
   "confidence_score": 0.88,
@@ -127,21 +125,20 @@ Case A - Successful execution:
 
 Case B - Spawn requested:
 {{
-  "agent_name": "BackendDev_001",
-  "draft": "Started implementing authentication endpoint but realized secure token management requires specialized security expertise. I can implement basic endpoint structure but need SecurityExpert for: JWT signing algorithms, token expiration policies, refresh token rotation, and secure storage patterns.",
+  "agent_name": "SpecialistA_001",
+  "draft": "Completed initial design of the authentication component covering credential validation. Secure token lifecycle (generation, signing, rotation, revocation) requires specialized security expertise beyond my scope. Documenting partial work and requesting a Security Specialist.",
   "structured_data": {{
     "entities": {{
-      "endpoint_auth_login": {{
-        "type": "API_Endpoint",
+      "authentication_component": {{
+        "type": "System_Component",
         "properties": {{
-          "method": "POST",
-          "path": "/auth/login",
-          "status": "partial"
+          "responsibility": "user authentication",
+          "status": "partial - token security pending"
         }}
       }}
     }},
     "relations": [
-      {{"source": "backend", "rel": "implements", "target": "endpoint_auth_login"}}
+      {{"source": "core_service", "rel": "implements", "target": "authentication_component"}}
     ]
   }},
   "confidence_score": 0.45,
@@ -152,13 +149,13 @@ Case B - Spawn requested:
 
 Case C - Execution error:
 {{
-  "agent_name": "DBAdmin_001",
+  "agent_name": "SpecialistB_001",
   "draft": "",
   "structured_data": {{}},
   "confidence_score": 0.0,
   "internal_iterations": 0,
   "spawn_requested": false,
-  "error": "Fractal subgraph timeout after 120s. Planner phase stuck in loop analyzing database schema options. Possible issue: insufficient context from Knowledge Graph about data requirements."
+  "error": "Fractal subgraph timeout after 120s. Planner phase stuck analyzing options. Possible issue: insufficient context from Knowledge Graph about domain requirements."
 }}
 
 INPUT DATA

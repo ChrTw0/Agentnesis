@@ -86,39 +86,38 @@ Respond with valid JSON only (no markdown, no extra text):
 
 EXAMPLE PLANS:
 
-Case A - Backend API endpoint (BackendDev):
+Case A - Component or service design (any domain):
 {{
   "plan": [
-    "Step 1: Review Knowledge Graph context for existing database schema and backend architecture",
-    "Step 2: Define endpoint specification (method, path, request/response schema)",
-    "Step 3: Identify dependencies (database models, authentication requirements)",
-    "Step 4: Design implementation using FastAPI with proper error handling",
-    "Step 5: Specify entities and relations to add to Knowledge Graph",
+    "Step 1: Review Knowledge Graph context for existing decisions and approved architecture",
+    "Step 2: Define the component's responsibilities, interfaces, and constraints",
+    "Step 3: Identify dependencies on other components or agents' approved work",
+    "Step 4: Design the implementation approach best suited to the domain and requirements",
+    "Step 5: Specify entities and relations to add to the Knowledge Graph",
     "Step 6: Synthesize implementation details into draft with structured_data"
   ]
 }}
 
-Case B - Database schema design (DBAdmin):
+Case B - Domain artifact design (model, process, structure, policy):
 {{
   "plan": [
-    "Step 1: Extract data requirements from user query and Knowledge Graph context",
-    "Step 2: Identify entity types and their attributes",
-    "Step 3: Define relationships and cardinalities between entities",
-    "Step 4: Choose appropriate data types and constraints for PostgreSQL",
-    "Step 5: Check for conflicts with existing database entities in Knowledge Graph",
-    "Step 6: Generate CREATE TABLE statements with indexes",
-    "Step 7: Package schema as structured_data for Knowledge Graph"
+    "Step 1: Extract requirements from user query and Knowledge Graph context",
+    "Step 2: Identify key entities, attributes, and relationships relevant to the domain",
+    "Step 3: Define structure and constraints appropriate to the problem",
+    "Step 4: Select the approach best suited to the domain (not a specific technology)",
+    "Step 5: Check for conflicts with existing entities in the Knowledge Graph",
+    "Step 6: Package the artifact definition as structured_data for the Knowledge Graph"
   ]
 }}
 
-Case C - Security review with capability gap (SecurityExpert):
+Case C - Specialist with capability gap (any role):
 {{
   "plan": [
-    "Step 1: Review authentication implementation from Knowledge Graph",
-    "Step 2: Identify security requirements (encryption, token management, etc.)",
-    "Step 3: CAPABILITY GAP DETECTED - need ComplianceExpert for GDPR validation",
-    "Step 4: Request spawn of ComplianceExpert via spawn_request",
-    "Step 5: Document security recommendations within my expertise scope",
+    "Step 1: Review relevant context from the Knowledge Graph",
+    "Step 2: Identify what is within my expertise scope",
+    "Step 3: CAPABILITY GAP DETECTED - identify the missing expertise needed",
+    "Step 4: Request spawn of the appropriate specialist via spawn_request",
+    "Step 5: Document contributions within my expertise scope",
     "Step 6: Mark draft as partial and emit spawn_request"
   ]
 }}

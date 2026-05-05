@@ -10,12 +10,13 @@ Chains reutilizables para el bucle cognitivo interno:
 import json
 from typing import List, Dict, Any
 from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
 
 from src.specialists.fractal_agent.schema import InternalAgentState
 from src.utils.prompt_loader import load_prompt
-from src.utils.llm_invoker import invoke_llm
-from src.utils.helpers import extract_json
+from src.utils.llm_invoker import invoke_llm, invoke_llm_with_tools
+from src.utils.helpers import extract_json, get_temporal_anchor, format_tools_for_prompt
 
 
 class FractalAgentChains:
@@ -28,12 +29,14 @@ class FractalAgentChains:
     - Critic: State + draft → decisión (aprobar/revisar)
     """
 
-    def __init__(self, llm: ChatOpenAI):
+    def __init__(self, llm: ChatOpenAI, tools: List[BaseTool] | None = None):
         """
         Args:
-            llm: Instancia de ChatOpenAI configurada
+            llm:   Instancia de ChatOpenAI configurada
+            tools: Tools disponibles para el Executor (None = sin tool calling)
         """
         self.llm = llm
+        self.tools: List[BaseTool] = tools or []
 
     def plan(self, state: InternalAgentState) -> Dict[str, Any]:
         """
@@ -88,17 +91,24 @@ class FractalAgentChains:
             agent_name=state["profile"].name,
             agent_role=state["profile"].role,
             agent_expertise=", ".join(state["profile"].expertise) if state["profile"].expertise else "general",
-            agent_tools=", ".join(state["profile"].tools) if state["profile"].tools else "none",
+            agent_tools=format_tools_for_prompt([t.name for t in self.tools]),
             task=state["task"],
             plan="\n".join(state["plan"]) if state["plan"] else "- No plan",
             global_context=state["global_context"],
             scratchpad="\n".join(state["scratchpad"]) if state["scratchpad"] else "- Empty",
-            current_step=state["current_step"]
+            current_step=state["current_step"],
+            temporal_anchor=get_temporal_anchor()
         )
 
-        # Invocar LLM
+        # Invocar LLM — con tools si están disponibles, sin ellas si no
         messages = [HumanMessage(content=executor_prompt)]
-        response = invoke_llm(self.llm, messages, agent_name="FractalAgent", chain_name="execute")
+        if self.tools:
+            response = invoke_llm_with_tools(
+                self.llm, messages, self.tools,
+                agent_name="FractalAgent", chain_name="execute"
+            )
+        else:
+            response = invoke_llm(self.llm, messages, agent_name="FractalAgent", chain_name="execute")
 
         # Parse JSON
         try:

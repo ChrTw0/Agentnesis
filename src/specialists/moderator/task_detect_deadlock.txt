@@ -59,9 +59,9 @@ EXAMPLE DETECTIONS:
 Case A - Rejection loop:
 {{
   "deadlock_type": "rejection_loop",
-  "description": "BackendDev_001 has been rejected 3 times consecutively by Integrator. Keeps proposing MongoDB but DBAdmin_001 already committed to PostgreSQL. Agent not adapting to feedback.",
-  "involved_agents": ["BackendDev_001", "DBAdmin_001"],
-  "suggested_action": "Review Integrator feedback with BackendDev_001. Clarify that PostgreSQL is non-negotiable and MongoDB proposal conflicts with approved architecture."
+  "description": "SpecialistA_001 has been rejected 3 times consecutively by Integrator. Keeps proposing a solution that conflicts with a decision already committed by SpecialistB_001. Agent not adapting to feedback.",
+  "involved_agents": ["SpecialistA_001", "SpecialistB_001"],
+  "suggested_action": "Review Integrator feedback with SpecialistA_001. Clarify the committed decision is non-negotiable and the conflicting proposal must be revised to align with the approved architecture."
 }}
 
 Case B - Max iterations:

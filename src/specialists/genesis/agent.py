@@ -91,18 +91,20 @@ class GenesisAgent:
         spawned_by: str,
         spawn_depth: int,
         existing_agents: List[AgentProfile],
-        spawn_reason: Optional[str] = None
+        spawn_reason: Optional[str] = None,
+        tools: Optional[List[str]] = None
     ) -> AgentProfile:
         """
         Crea un AgentProfile completo para un nuevo agente.
 
         Args:
-            role: Rol del agente (ej: "Backend Developer")
-            expertise: Lista de expertise (ej: ["FastAPI", "PostgreSQL"])
+            role: Rol del agente (ej: "Research Analyst")
+            expertise: Lista de expertise
             spawned_by: Quién lo spawneó
             spawn_depth: Profundidad en el árbol de spawning
             existing_agents: Agentes existentes (para generar nombre único)
             spawn_reason: Razón del spawn (opcional)
+            tools: Tools del registry asignadas a este rol (None = sin herramientas)
 
         Returns:
             AgentProfile completo con system_prompt personalizado
@@ -120,7 +122,7 @@ class GenesisAgent:
             role=role,
             expertise=expertise,
             system_prompt=system_prompt,
-            tools=[],  # TODO: Asignar tools según rol
+            tools=tools or [],
             dependencies=[],
             spawn_depth=spawn_depth,
             spawned_by=spawned_by,

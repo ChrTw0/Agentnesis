@@ -48,6 +48,13 @@ class GraphConfig(BaseModel):
     recursion_limit: int = Field(ge=25, le=500)
 
 
+class ToolsConfig(BaseModel):
+    """Configuración de herramientas externas (búsqueda web, scraping)"""
+
+    searxng_url: Optional[str] = None
+    tools_enabled: bool = False
+
+
 class DeveloperConfig(BaseModel):
     """Configuración para modo developer (debugging/testing)"""
 
@@ -67,6 +74,9 @@ class Settings(BaseModel):
 
     # LLM Configuration
     llm: LLMConfig
+
+    # Tools Configuration
+    tools: ToolsConfig
 
     # Specialist Configs
     genesis: GenesisConfig
@@ -91,6 +101,12 @@ class Settings(BaseModel):
 
         # Cargar .env
         load_dotenv()
+
+        # Crear ToolsConfig
+        tools_config = ToolsConfig(
+            searxng_url=os.getenv("SEARXNG_URL"),
+            tools_enabled=os.getenv("TOOLS_ENABLED", "false").lower() == "true"
+        )
 
         # Crear LLMConfig
         llm_config = LLMConfig(
@@ -171,6 +187,7 @@ class Settings(BaseModel):
 
         return cls(
             llm=llm_config,
+            tools=tools_config,
             genesis=genesis_config,
             moderator=moderator_config,
             integrator=integrator_config,

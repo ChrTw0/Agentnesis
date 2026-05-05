@@ -7,7 +7,7 @@ Genesis es responsable de:
 - Procesar spawn requests dinámicamente
 """
 
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 from pydantic import BaseModel, Field
 
 
@@ -23,6 +23,10 @@ class DomainAnalysis(BaseModel):
         default_factory=list,
         description="Roles necesarios identificados (ej: ['Backend Dev', 'DB Admin'])"
     )
+    tools_per_role: Dict[str, List[str]] = Field(
+        default_factory=dict,
+        description="Mapeo rol → tools requeridas (ej: {'Research Analyst': ['web_search', 'scrape_article']}). Solo incluir roles que necesiten herramientas externas."
+    )
     reasoning: str = Field(..., description="Razonamiento del análisis")
 
     class Config:
@@ -31,6 +35,7 @@ class DomainAnalysis(BaseModel):
                 "domain": "Software Engineering",
                 "complexity": "medium",
                 "required_roles": ["Backend Developer", "Database Administrator"],
+                "tools_per_role": {},
                 "reasoning": "El usuario solicita crear una API REST con base de datos, requiere expertise en backend y bases de datos."
             }
         }

@@ -81,7 +81,7 @@ Case B - Reuse existing:
   "should_spawn": false,
   "agent_name": null,
   "existing_agent": "BackendDev_001",
-  "reasoning": "BackendDev_001 already has Python and FastAPI expertise (80% overlap with request). No need for new agent. Assign task to existing agent.",
+  "reasoning": "BackendDev_001 already has expertise overlapping 80% with the request. No need for new agent. Assign task to existing agent.",
   "spawn_depth": 0
 }}
 

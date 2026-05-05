@@ -13,15 +13,16 @@ Flujo:
    - Si max retries → FORCE_APPROVE → END
 """
 
-from typing import Literal
+from typing import Literal, List
 from langgraph.graph import StateGraph, END
+from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
 
 from src.specialists.fractal_agent.schema import InternalAgentState
 from src.specialists.fractal_agent.chains import FractalAgentChains
 
 
-def create_fractal_subgraph(llm: ChatOpenAI) -> StateGraph:
+def create_fractal_subgraph(llm: ChatOpenAI, tools: List[BaseTool] | None = None) -> StateGraph:
     """
     Crea el subgrafo fractal (Planner → Executor → Critic).
 
@@ -32,7 +33,7 @@ def create_fractal_subgraph(llm: ChatOpenAI) -> StateGraph:
         StateGraph compilado del subgrafo fractal
     """
     # Inicializar chains
-    chains = FractalAgentChains(llm)
+    chains = FractalAgentChains(llm, tools=tools or [])
 
     # Definir nodos
     def planner_node(state: InternalAgentState) -> InternalAgentState:
@@ -122,7 +123,7 @@ def create_fractal_subgraph(llm: ChatOpenAI) -> StateGraph:
     return workflow
 
 
-def compile_fractal_subgraph(llm: ChatOpenAI) -> StateGraph:
+def compile_fractal_subgraph(llm: ChatOpenAI, tools: List[BaseTool] | None = None) -> StateGraph:
     """
     Compila el subgrafo fractal listo para ejecución.
 
@@ -132,7 +133,7 @@ def compile_fractal_subgraph(llm: ChatOpenAI) -> StateGraph:
     Returns:
         Subgrafo compilado
     """
-    workflow = create_fractal_subgraph(llm)
+    workflow = create_fractal_subgraph(llm, tools=tools)
     return workflow.compile()
 
 

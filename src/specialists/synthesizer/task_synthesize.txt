@@ -54,16 +54,16 @@ Respond with valid JSON only (no markdown, no extra text):
 
 EXAMPLE OUTPUTS:
 
-Software Engineering (API Design):
+Software Engineering (System Design):
 {{
-  "final_answer": "Based on your requirements, I've designed a complete REST API architecture using FastAPI and PostgreSQL...",
-  "summary": "The system analyzed your API requirements and designed a production-ready architecture...",
+  "final_answer": "Based on your requirements, the team has designed a complete system architecture covering all requested components...",
+  "summary": "The system analyzed your requirements across multiple domains and produced a coherent, validated architecture...",
   "key_decisions": [
-    "FastAPI over Flask: Better async performance",
-    "PostgreSQL over MongoDB: Relational integrity needed"
+    "Modular service decomposition: Allows independent scaling and maintenance",
+    "Relational data model: Required by the integrity constraints of the domain"
   ],
   "entities_created": 8,
-  "agents_involved": ["BackendDev_001", "DBAdmin_001"],
+  "agents_involved": ["SpecialistA_001", "SpecialistB_001"],
   "confidence": 0.95
 }}
 

@@ -40,6 +40,8 @@ En lugar de usar un solo LLM o un conjunto fijo de agentes, Agentnesis:
 -   **Resolución de Conflictos**: El Integrador valida las propuestas contra el KG para prevenir contradicciones.
 -   **Gestión de Turnos**: El Moderador orquesta los turnos de los agentes y detecta bloqueos.
 -   **Aislamiento de Estado**: Cada agente tiene su propia cadena LLM y conjunto de herramientas para prevenir contaminación cruzada.
+-   **Tools por Rol**: Genesis asigna herramientas externas (búsqueda web, scraping) a cada agente según su rol. Los agentes que razonan o sintetizan no reciben tools; los que necesitan información externa sí.
+-   **Anclaje Temporal**: Cada ejecución inyecta la fecha UTC real en los prompts para evitar alucinaciones de fecha basadas en el knowledge cutoff del LLM.
 
 ## Arquitectura
 
@@ -88,7 +90,7 @@ En lugar de usar un solo LLM o un conjunto fijo de agentes, Agentnesis:
 
 ## Limitaciones Actuales
 
-**Herramientas:** Actualmente opera utilizando solo conocimiento y razonamiento del LLM. Herramientas externas (búsqueda web, análisis de PDF, ejecución de código) están planeadas para futuras versiones.
+**Herramientas:** El sistema incluye búsqueda web y scraping vía SearXNG (deshabilitado por defecto). Requiere una instancia de SearXNG corriendo localmente antes de activar `TOOLS_ENABLED=true`. Otras herramientas (análisis de PDF, ejecución de código) están planificadas para fases futuras.
 
 **Modelo Recomendado:** [DeepSeek V3.2](https://platform.deepseek.com/) vía [OpenRouter](https://openrouter.ai/)
 -   **¿Por qué DeepSeek?** Arquitectura de atención dispersa → bajo costo (~$0.25/1M tokens de entrada).
@@ -134,6 +136,11 @@ WORKER_MODEL=deepseek/deepseek-v3.2
 GRAPH_RECURSION_LIMIT=75
 MODERATOR_MAX_ITERATIONS=20
 GENESIS_MAX_AGENTS=10
+
+# Tools (opcional - deshabilitado por defecto)
+# Requiere SearXNG corriendo en local antes de activar
+TOOLS_ENABLED=false
+SEARXNG_URL=http://localhost:8080
 ```
 
 ## Uso
@@ -158,8 +165,8 @@ Agentnesis/
 │   │   ├── synthesizer/     # Consolidación de salida final
 │   │   ├── fractal_agent/   # Bucle Planificar-Ejecutar-Criticar
 │   │   └── universal_worker/# Ejecución de agente polimórfico
-│   ├── utils/               # Ayudantes (cargador de prompts, parser JSON, logger)
-│   ├── tools/               # Herramientas externas (Fase 2 - ver tools/README.md)
+│   ├── utils/               # Helpers: prompt loader, JSON parser, temporal anchor, retry, URL utils
+│   ├── tools/               # Tools externas: registry, SearXNG, Scrapling (ver tools/README.md)
 │   └── services/            # Integraciones externas (Fase 3 - ver services/__init__.py)
 ├── tests/                   # Suite de pruebas (futuro - ver tests/README.md)
 ├── scripts/                 # Scripts de desarrollo
@@ -222,18 +229,18 @@ final_output = synthesizer.synthesize(
 
 ## Hoja de Ruta (Roadmap)
 
-**Fase 1 (Actual - MVP):** [OK]
+**Fase 1 (MVP):** [OK]
 - Generación dinámica de agentes
 - Bucles de razonamiento fractal
 - Integración de grafo de conocimiento
 - Validación y orquestación
 
-**Fase 2 (Siguiente - Exploración de Herramientas):**
-- **Búsqueda Web**: Tavily/SerpAPI/DuckDuckGo (recuperación de información en tiempo real)
-- **Análisis de PDF**: Ingesta y extracción de documentos
-- **Web Scraping**: BeautifulSoup/Playwright para datos estructurados
-- **Ejecución de Código**: Entornos aislados ("sandboxed") (bajo evaluación)
-- **Vinculación Dinámica de Herramientas**: Herramientas asignadas por rol de agente al momento de la generación
+**Fase 2 (Actual - Tools):** [OK]
+- **Búsqueda Web**: SearXNG (self-hosted, sin APIs de pago)
+- **Web Scraping**: Scrapling para extracción de contenido
+- **Vinculación Dinámica de Herramientas**: Genesis asigna tools por rol en creación y en spawns dinámicos
+- **Anclaje Temporal**: Inyección de fecha UTC real en prompts
+- Análisis de PDF y ejecución de código: planificados
 
 **Fase 3 (Futuro):**
 - Checkpointing persistente (PostgreSQL)

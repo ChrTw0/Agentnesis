@@ -87,15 +87,16 @@ def create_main_graph(
         # Crear agentes iniciales
         new_agents = []
         for role in domain_analysis.required_roles:
-            # Mapear rol a expertise (simplificado, mejorar en futuro)
-            expertise = [role]  # TODO: Lookup table rol → expertise
+            expertise = [role]
+            role_tools = domain_analysis.tools_per_role.get(role, [])
 
             agent_profile = genesis.create_agent_profile(
                 role=role,
                 expertise=expertise,
                 spawned_by="Genesis",
                 spawn_depth=1,
-                existing_agents=state.get("active_agents", [])
+                existing_agents=state.get("active_agents", []),
+                tools=role_tools
             )
             new_agents.append(agent_profile)
 
@@ -310,13 +311,19 @@ def create_main_graph(
                 (a for a in state.get("active_agents", []) if a.name == request.requester),
                 None
             )
+            spawn_role = decision.agent_name or request.role
+            spawn_tools = genesis.chains.assign_tools_for_role(
+                role=spawn_role,
+                required_expertise=request.required_expertise
+            )
             new_agent = genesis.create_agent_profile(
-                role=decision.agent_name or request.role,
+                role=spawn_role,
                 expertise=request.required_expertise,
                 spawned_by=request.requester,
                 spawn_depth=(requester.spawn_depth + 1) if requester else 1,
                 existing_agents=state.get("active_agents", []),
-                spawn_reason=request.justification
+                spawn_reason=request.justification,
+                tools=spawn_tools
             )
             agents = list(state.get("active_agents", []))
             agents.append(new_agent)

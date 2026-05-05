@@ -30,7 +30,7 @@ VALIDATION FLOW:
 CONFLICT TYPES:
 
 1. TECHNICAL: Incompatible technologies/versions
-   Example: Agent proposes MongoDB but PostgreSQL already committed
+   Example: Agent proposes a technology that conflicts with one already committed in the KG
 
 2. SEMANTIC: Logical contradictions
    Example: Agent says "API is RESTful" but KG shows "API uses GraphQL"
@@ -43,7 +43,7 @@ CONFLICT TYPES:
 
 PRINCIPLES
 ==========
-1. Knowledge Graph is Truth: If KG says PostgreSQL, new proposals must respect that.
+1. Knowledge Graph is Truth: Once a decision is committed to the KG, new proposals must respect it.
 
 2. First Commit Wins: Once entity/relation approved, later proposals must align or explicitly override.
 

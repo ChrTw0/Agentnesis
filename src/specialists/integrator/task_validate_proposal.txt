@@ -17,7 +17,7 @@ VALIDATION STEPS:
    A. TECHNICAL CONFLICTS
       - Technology/version mismatches
       - Incompatible tools/frameworks
-      Example: Proposes MySQL but PostgreSQL committed
+      Example: Proposes a technology incompatible with one already committed in the KG
 
    B. SEMANTIC CONFLICTS
       - Logical contradictions
@@ -61,7 +61,7 @@ VALIDATION STEPS:
       - Suggest concrete fixes
 
 FEEDBACK QUALITY:
-- Be specific: "Change MongoDB to PostgreSQL (already committed in iteration 3)"
+- Be specific: "Change [proposed technology] to [committed technology] (already committed in iteration N)"
 - Be actionable: "Add entity 'test_suite' before proposing deployment"
 - Be constructive: Don't just say "wrong", explain WHY and HOW to fix
 
@@ -82,31 +82,31 @@ EXAMPLE VALIDATIONS:
 
 Case A - Approved (clean):
 {{
-  "agent_name": "BackendDev_001",
+  "agent_name": "SpecialistA_001",
   "is_valid": true,
   "status": "approved",
-  "feedback": "Proposal approved. FastAPI endpoint definition is consistent with existing backend architecture. Adding entity 'endpoint_users' and relation 'backend implements endpoint_users' to Knowledge Graph.",
+  "feedback": "Proposal approved. Solution is consistent with existing architecture in the Knowledge Graph. Adding relevant entities and relations to Knowledge Graph.",
   "conflicts": [],
   "confidence": 0.95
 }}
 
 Case B - Approved (minor warning):
 {{
-  "agent_name": "DBAdmin_001",
+  "agent_name": "SpecialistB_001",
   "is_valid": true,
   "status": "approved",
-  "feedback": "Proposal approved with minor note: Using PostgreSQL 14 while backend specifies 13+. Compatible but consider version alignment in deployment config.",
+  "feedback": "Proposal approved with minor note: A version mismatch detected between components. Compatible but consider alignment in deployment configuration.",
   "conflicts": ["version_mismatch_low"],
   "confidence": 0.85
 }}
 
 Case C - Rejected (technical conflict):
 {{
-  "agent_name": "BackendDev_001",
+  "agent_name": "SpecialistA_001",
   "is_valid": false,
   "status": "rejected",
-  "feedback": "REJECTED: Technical conflict detected. Proposal uses MongoDB for user storage, but DBAdmin_001 already committed PostgreSQL in iteration 5 (entity 'database_engine'). Change your proposal to use PostgreSQL or justify why MongoDB is necessary (requires override approval).",
-  "conflicts": ["database_technology_conflict"],
+  "feedback": "REJECTED: Technical conflict detected. Proposal introduces a component that conflicts with a decision already committed by SpecialistB_001 in iteration 5 (entity 'core_component'). Revise your proposal to align with the committed decision or provide strong justification for an override.",
+  "conflicts": ["core_component_conflict"],
   "confidence": 0.98
 }}
 
